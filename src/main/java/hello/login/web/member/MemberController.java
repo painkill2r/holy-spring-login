@@ -34,6 +34,6 @@ public class MemberController {
 
         memberRepository.save(member);
 
-        return "redierct:/";
+        return "redirect:/";
     }
 }
