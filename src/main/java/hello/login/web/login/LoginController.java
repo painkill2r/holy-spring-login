@@ -48,4 +48,22 @@ public class LoginController {
 
         return "redirect:/";
     }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletResponse response) {
+        expireCookie(response, "memberId");
+        return "redirect:/";
+    }
+
+    /**
+     * 두번째 인자로 지정한 이름의 쿠키를 삭제
+     *
+     * @param response
+     * @param cookieName
+     */
+    private void expireCookie(HttpServletResponse response, String cookieName) {
+        Cookie cookie = new Cookie(cookieName, null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
 }
