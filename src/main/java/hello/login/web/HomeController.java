@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -63,13 +64,13 @@ public class HomeController {
     //@GetMapping("/")
     public String homeLoginV2(HttpServletRequest request, Model model) {
         // 세션 관리자에 저장된 회원 정보 조회
-        Member member = (Member) sessionManager.getSession(request);
+        Member loginMember = (Member) sessionManager.getSession(request);
 
-        if (member == null) {
+        if (loginMember == null) {
             return "home";
         }
 
-        model.addAttribute("member", member);
+        model.addAttribute("member", loginMember);
 
         return "loginHome";
     }
@@ -81,20 +82,37 @@ public class HomeController {
      * @param model
      * @return
      */
-    @GetMapping("/")
+    //@GetMapping("/")
     public String homeLoginV3(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             return "home";
         }
 
-        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        Member loginMember = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
 
-        if (member == null) {
+        if (loginMember == null) {
             return "home";
         }
 
-        model.addAttribute("member", member);
+        model.addAttribute("member", loginMember);
+
+        return "loginHome";
+    }
+
+    /**
+     * @param model
+     * @return
+     * @SessionAttribute(name = "name") 스프링에서 지원하는 어노테이션으로 세션을 찾고, 세션에 들어있는 데이터를 조회함.
+     * 하지만 이 기능은 세션이 없는 경우 세션을 새로 생성하지 않는다.
+     */
+    @GetMapping("/")
+    public String homeLoginV4(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
+        if (loginMember == null) {
+            return "home";
+        }
+
+        model.addAttribute("member", loginMember);
 
         return "loginHome";
     }
