@@ -2,6 +2,7 @@ package hello.login.web;
 
 import hello.login.domain.member.Member;
 import hello.login.domain.member.MemberRepository;
+import hello.login.web.argumentresolver.Login;
 import hello.login.web.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -106,8 +107,26 @@ public class HomeController {
      * @SessionAttribute(name = "name") 스프링에서 지원하는 어노테이션으로 세션을 찾고, 세션에 들어있는 데이터를 조회함.
      * 하지만 이 기능은 세션이 없는 경우 세션을 새로 생성하지 않는다.
      */
-    @GetMapping("/")
+    //@GetMapping("/")
     public String homeLoginV4(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember, Model model) {
+        if (loginMember == null) {
+            return "home";
+        }
+
+        model.addAttribute("member", loginMember);
+
+        return "loginHome";
+    }
+
+    /**
+     * ArgumentResolver 사용
+     *
+     * @param loginMember
+     * @param model
+     * @return
+     */
+    @GetMapping("/")
+    public String homeLoginV5(@Login Member loginMember, Model model) {
         if (loginMember == null) {
             return "home";
         }

@@ -1,5 +1,6 @@
 package hello.login;
 
+import hello.login.web.argumentresolver.LoginMemberArgumentResolver;
 import hello.login.web.filter.LogFilter;
 import hello.login.web.filter.LoginCheckFilter;
 import hello.login.web.interceptor.LogInterceptor;
@@ -7,13 +8,15 @@ import hello.login.web.interceptor.LoginCheckInterceptor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.Filter;
+import java.util.List;
 
 /**
- * 인터셉터를 등록하기 위해서는 WebMvcConfigurer 인터페이스를 구현하면 됨.
+ * 인터셉터, 아규먼트 리졸버를 등록하기 위해서는 WebMvcConfigurer 인터페이스를 구현하면 됨.
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -38,6 +41,11 @@ public class WebConfig implements WebMvcConfigurer {
         return filterRegistrationBean;
     }
 
+    /**
+     * 직접 만든 인터셉터 등록
+     *
+     * @param registry
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LogInterceptor()) //등록할 인터셉터
@@ -49,5 +57,15 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(2)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/members/add", "/login", "/logout", "/css/**", "/*.ico", "/error");
+    }
+
+    /**
+     * 직접 만든 아규먼트 리졸버 등록
+     *
+     * @param resolvers
+     */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new LoginMemberArgumentResolver());
     }
 }
